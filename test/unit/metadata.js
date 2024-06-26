@@ -55,8 +55,8 @@ describe('Image metadata', function () {
       assert.strictEqual(true, metadata.exif instanceof Buffer);
       const exif = exifReader(metadata.exif);
       assert.strictEqual('object', typeof exif);
-      assert.strictEqual('object', typeof exif.image);
-      assert.strictEqual('number', typeof exif.image.XResolution);
+      assert.strictEqual('object', typeof exif.Image);
+      assert.strictEqual('number', typeof exif.Image.XResolution);
       // ICC
       assert.strictEqual('object', typeof metadata.icc);
       assert.strictEqual(true, metadata.icc instanceof Buffer);

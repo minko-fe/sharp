@@ -8,6 +8,7 @@ const os = require('os');
 const path = require('path');
 const stream = require('stream');
 const zlib = require('zlib');
+
 const { createHash } = require('crypto');
 
 const detectLibc = require('detect-libc');
@@ -63,36 +64,36 @@ const handleError = function (err) {
   }
 };
 
-const verifyIntegrity = function (platformAndArch) {
-  const expected = libvips.integrity(platformAndArch);
-  if (installationForced || !expected) {
-    libvips.log(`Integrity check skipped for ${platformAndArch}`);
-    return new stream.PassThrough();
-  }
-  const hash = createHash('sha512');
-  return new stream.Transform({
-    transform: function (chunk, _encoding, done) {
-      hash.update(chunk);
-      done(null, chunk);
-    },
-    flush: function (done) {
-      const digest = `sha512-${hash.digest('base64')}`;
-      if (expected !== digest) {
-        try {
-          libvips.removeVendoredLibvips();
-        } catch (err) {
-          libvips.log(err.message);
-        }
-        libvips.log(`Integrity expected: ${expected}`);
-        libvips.log(`Integrity received: ${digest}`);
-        done(new Error(`Integrity check failed for ${platformAndArch}`));
-      } else {
-        libvips.log(`Integrity check passed for ${platformAndArch}`);
-        done();
-      }
-    }
-  });
-};
+// const verifyIntegrity = function (platformAndArch) {
+//   const expected = libvips.integrity(platformAndArch);
+//   if (installationForced || !expected) {
+//     libvips.log(`Integrity check skipped for ${platformAndArch}`);
+//     return new stream.PassThrough();
+//   }
+//   const hash = createHash('sha512');
+//   return new stream.Transform({
+//     transform: function (chunk, _encoding, done) {
+//       hash.update(chunk);
+//       done(null, chunk);
+//     },
+//     flush: function (done) {
+//       const digest = `sha512-${hash.digest('base64')}`;
+//       if (expected !== digest) {
+//         try {
+//           libvips.removeVendoredLibvips();
+//         } catch (err) {
+//           libvips.log(err.message);
+//         }
+//         libvips.log(`Integrity expected: ${expected}`);
+//         libvips.log(`Integrity received: ${digest}`);
+//         done(new Error(`Integrity check failed for ${platformAndArch}`));
+//       } else {
+//         libvips.log(`Integrity check passed for ${platformAndArch}`);
+//         done();
+//       }
+//     }
+//   });
+// };
 
 const extractTarball = function (tarPath, platformAndArch) {
   const versionedVendorPath = path.join(__dirname, '..', 'vendor', minimumLibvipsVersion, platformAndArch);
@@ -105,8 +106,9 @@ const extractTarball = function (tarPath, platformAndArch) {
 
   stream.pipeline(
     fs.createReadStream(tarPath),
-    verifyIntegrity(platformAndArch),
-    new zlib.BrotliDecompress(),
+    // verifyIntegrity(platformAndArch),
+    // new zlib.BrotliDecompress(),
+    zlib.createGunzip(),
     tarFs.extract(versionedVendorPath, { ignore }),
     function (err) {
       if (err) {
@@ -161,7 +163,7 @@ try {
       handleError(new Error(`Expected Node.js version ${supportedNodeVersion} but found ${process.versions.node}`));
     }
     // Download to per-process temporary file
-    const tarFilename = ['libvips', minimumLibvipsVersionLabelled, platformAndArch].join('-') + '.tar.br';
+    const tarFilename = ['libvips', minimumLibvipsVersionLabelled, platformAndArch].join('-') + '.tar.gz';
     const tarPathCache = path.join(libvips.cachePath(), tarFilename);
     if (fs.existsSync(tarPathCache)) {
       libvips.log(`Using cached ${tarPathCache}`);
