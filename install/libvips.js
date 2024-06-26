@@ -9,7 +9,7 @@ const path = require('path');
 const stream = require('stream');
 const zlib = require('zlib');
 
-const { createHash } = require('crypto');
+// const { createHash } = require('crypto');
 
 const detectLibc = require('detect-libc');
 const semverCoerce = require('semver/functions/coerce');
