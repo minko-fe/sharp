@@ -30,8 +30,6 @@
           'library_dirs': ['<(sharp_vendor_dir)/lib'],
           'libraries': [
             'libvips.lib',
-            'libglib-2.0.lib',
-            'libgobject-2.0.lib'
           ],
         },
         'configurations': {
@@ -136,8 +134,6 @@
               'library_dirs': ['<(sharp_vendor_dir)/lib'],
               'libraries': [
                 'libvips.lib',
-                'libglib-2.0.lib',
-                'libgobject-2.0.lib'
               ]
             }
           }],

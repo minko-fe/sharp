@@ -1,7 +1,7 @@
 {
   "name": "@minko-fe/sharp",
   "description": "High performance Node.js image processing, the fastest module to resize JPEG, PNG, WebP, GIF, AVIF and TIFF images",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "author": "Lovell Fuller <npm@lovell.info>",
   "homepage": "https://github.com/lovell/sharp",
   "scripts": {
@@ -15,7 +15,8 @@
     "test-types": "tsd",
     "docs-build": "node docs/build && node docs/search-index/build",
     "docs-serve": "cd docs && npx serve",
-    "docs-publish": "cd docs && npx firebase-tools deploy --project pixelplumbing --only hosting:pixelplumbing-sharp"
+    "docs-publish": "cd docs && npx firebase-tools deploy --project pixelplumbing --only hosting:pixelplumbing-sharp",
+    "bump": "bumpp package.json --no-commit --tag --no-push --all"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -60,6 +61,7 @@
   "devDependencies": {
     "@types/node": "*",
     "async": "^3.2.4",
+    "bumpp": "^9.4.1",
     "cc": "^3.0.1",
     "exif-reader": "^2.0.0",
     "extract-zip": "^2.0.1",
