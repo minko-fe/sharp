@@ -8,7 +8,7 @@ jobs:
     permissions:
       contents: write # for npx prebuild to make release
     name: Node.js ${{ matrix.nodejs_version }} ${{ matrix.nodejs_arch }} ${{ matrix.prebuild && '- prebuild' }}
-    runs-on: macos-latest-xlarge
+    runs-on: macos-14
     strategy:
       fail-fast: false
       matrix:
