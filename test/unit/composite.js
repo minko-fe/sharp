@@ -246,7 +246,7 @@ describe('composite', () => {
     sharp(fixtures.inputJpg)
       .resize(300, 300)
       .composite([{
-        input: Buffer.from('<svg width="200" height="200"><rect x="0" y="0" width="200" height="200" rx="50" ry="50"/></svg>'),
+        input: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect x="0" y="0" width="200" height="200" rx="50" ry="50"/></svg>'),
         density: 96,
         blend: 'dest-in',
         cutout: true
@@ -269,7 +269,7 @@ describe('composite', () => {
           .resize(80)
           .composite([{
             input: fixtures.inputPngWithTransparency16bit,
-            gravity: gravity
+            gravity
           }])
           .toBuffer((err, data, info) => {
             if (err) throw err;
@@ -314,7 +314,7 @@ describe('composite', () => {
           .composite([{
             input: fixtures.inputPngWithTransparency16bit,
             tile: true,
-            gravity: gravity
+            gravity
           }])
           .toBuffer((err, data, info) => {
             if (err) throw err;
@@ -451,7 +451,7 @@ describe('composite', () => {
     assert.strictEqual(info.height, 40);
   });
 
-  it('Ensure implict unpremultiply after resize but before composite', async () => {
+  it('Ensure implicit unpremultiply after resize but before composite', async () => {
     const [r, g, b, a] = await sharp({
       create: {
         width: 1, height: 1, channels: 4, background: 'saddlebrown'

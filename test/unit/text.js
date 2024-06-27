@@ -7,17 +7,21 @@ const assert = require('assert');
 
 const sharp = require('../../');
 const fixtures = require('../fixtures');
+const { inRange } = require('../../lib/is');
 
 describe('Text to image', function () {
   this.retries(3);
 
-  it('text with default values', async () => {
+  it('text with default values', async function () {
     const output = fixtures.path('output.text-default.png');
     const text = sharp({
       text: {
         text: 'Hello, world !'
       }
     });
+    if (!sharp.versions.pango) {
+      return this.skip();
+    }
     const info = await text.png().toFile(output);
     assert.strictEqual('png', info.format);
     assert.strictEqual(3, info.channels);
@@ -40,22 +44,23 @@ describe('Text to image', function () {
 
   it('text with width and height', function (done) {
     const output = fixtures.path('output.text-width-height.png');
-    const maxWidth = 500;
-    const maxHeight = 500;
     const text = sharp({
       text: {
         text: 'Hello, world!',
-        width: maxWidth,
-        height: maxHeight
+        width: 500,
+        height: 400
       }
     });
+    if (!sharp.versions.pango) {
+      return this.skip();
+    }
     text.toFile(output, function (err, info) {
       if (err) throw err;
       assert.strictEqual('png', info.format);
       assert.strictEqual(3, info.channels);
-      assert.ok(info.width <= maxWidth);
-      assert.ok(info.height <= maxHeight);
-      assert.ok(info.textAutofitDpi > 0);
+      assert.ok(inRange(info.width, 400, 600), `Actual width ${info.width}`);
+      assert.ok(inRange(info.height, 300, 500), `Actual height ${info.height}`);
+      assert.ok(inRange(info.textAutofitDpi, 900, 1300), `Actual textAutofitDpi ${info.textAutofitDpi}`);
       done();
     });
   });
@@ -66,9 +71,12 @@ describe('Text to image', function () {
     const text = sharp({
       text: {
         text: 'Hello, world!',
-        dpi: dpi
+        dpi
       }
     });
+    if (!sharp.versions.pango) {
+      return this.skip();
+    }
     text.toFile(output, function (err, info) {
       if (err) throw err;
       assert.strictEqual('png', info.format);
@@ -87,9 +95,12 @@ describe('Text to image', function () {
       text: {
         text: '<span foreground="red" font="100">red</span><span font="50" background="cyan">blue</span>',
         rgba: true,
-        dpi: dpi
+        dpi
       }
     });
+    if (!sharp.versions.pango) {
+      return this.skip();
+    }
     text.toFile(output, function (err, info) {
       if (err) throw err;
       assert.strictEqual('png', info.format);
@@ -112,6 +123,9 @@ describe('Text to image', function () {
         font: 'sans 100'
       }
     });
+    if (!sharp.versions.pango) {
+      return this.skip();
+    }
     text.toFile(output, function (err, info) {
       if (err) throw err;
       assert.strictEqual('png', info.format);
@@ -122,7 +136,7 @@ describe('Text to image', function () {
     });
   });
 
-  it('text with justify and composite', done => {
+  it('text with justify and composite', function (done) {
     const output = fixtures.path('output.text-composite.png');
     const width = 500;
     const dpi = 300;
@@ -146,13 +160,16 @@ describe('Text to image', function () {
           text: {
             text: '<span background="cyan">cool</span>',
             font: 'sans 30',
-            dpi: dpi,
+            dpi,
             rgba: true
           }
         },
         left: 30,
         top: 250
       }]);
+    if (!sharp.versions.pango) {
+      return this.skip();
+    }
     text.toFile(output, function (err, info) {
       if (err) throw err;
       assert.strictEqual('png', info.format);
@@ -211,26 +228,34 @@ describe('Text to image', function () {
     });
   });
 
-  it('bad width input', function () {
-    assert.throws(function () {
-      sharp({
-        text: {
-          text: 'text',
-          width: 'bad'
-        }
-      });
-    });
+  it('invalid width', () => {
+    assert.throws(
+      () => sharp({ text: { text: 'text', width: 'bad' } }),
+      /Expected positive integer for text\.width but received bad of type string/
+    );
+    assert.throws(
+      () => sharp({ text: { text: 'text', width: 0.1 } }),
+      /Expected positive integer for text\.width but received 0.1 of type number/
+    );
+    assert.throws(
+      () => sharp({ text: { text: 'text', width: -1 } }),
+      /Expected positive integer for text\.width but received -1 of type number/
+    );
   });
 
-  it('bad height input', function () {
-    assert.throws(function () {
-      sharp({
-        text: {
-          text: 'text',
-          height: 'bad'
-        }
-      });
-    });
+  it('invalid height', () => {
+    assert.throws(
+      () => sharp({ text: { text: 'text', height: 'bad' } }),
+      /Expected positive integer for text\.height but received bad of type string/
+    );
+    assert.throws(
+      () => sharp({ text: { text: 'text', height: 0.1 } }),
+      /Expected positive integer for text\.height but received 0.1 of type number/
+    );
+    assert.throws(
+      () => sharp({ text: { text: 'text', height: -1 } }),
+      /Expected positive integer for text\.height but received -1 of type number/
+    );
   });
 
   it('bad align input', function () {
@@ -255,15 +280,19 @@ describe('Text to image', function () {
     });
   });
 
-  it('bad dpi input', function () {
-    assert.throws(function () {
-      sharp({
-        text: {
-          text: 'text',
-          dpi: -10
-        }
-      });
-    });
+  it('invalid dpi', () => {
+    assert.throws(
+      () => sharp({ text: { text: 'text', dpi: 'bad' } }),
+      /Expected integer between 1 and 1000000 for text\.dpi but received bad of type string/
+    );
+    assert.throws(
+      () => sharp({ text: { text: 'text', dpi: 0.1 } }),
+      /Expected integer between 1 and 1000000 for text\.dpi but received 0.1 of type number/
+    );
+    assert.throws(
+      () => sharp({ text: { text: 'text', dpi: -1 } }),
+      /Expected integer between 1 and 1000000 for text\.dpi but received -1 of type number/
+    );
   });
 
   it('bad rgba input', function () {
@@ -277,15 +306,19 @@ describe('Text to image', function () {
     });
   });
 
-  it('bad spacing input', function () {
-    assert.throws(function () {
-      sharp({
-        text: {
-          text: 'text',
-          spacing: 'number expected'
-        }
-      });
-    });
+  it('invalid spacing', () => {
+    assert.throws(
+      () => sharp({ text: { text: 'text', spacing: 'bad' } }),
+      /Expected integer between -1000000 and 1000000 for text\.spacing but received bad of type string/
+    );
+    assert.throws(
+      () => sharp({ text: { text: 'text', spacing: 0.1 } }),
+      /Expected integer between -1000000 and 1000000 for text\.spacing but received 0.1 of type number/
+    );
+    assert.throws(
+      () => sharp({ text: { text: 'text', spacing: -1000001 } }),
+      /Expected integer between -1000000 and 1000000 for text\.spacing but received -1000001 of type number/
+    );
   });
 
   it('only height or dpi not both', function () {
@@ -302,21 +335,21 @@ describe('Text to image', function () {
 
   it('valid wrap throws', () => {
     assert.doesNotThrow(() => sharp({ text: { text: 'text', wrap: 'none' } }));
-    assert.doesNotThrow(() => sharp({ text: { text: 'text', wrap: 'wordChar' } }));
+    assert.doesNotThrow(() => sharp({ text: { text: 'text', wrap: 'word-char' } }));
   });
 
   it('invalid wrap throws', () => {
     assert.throws(
       () => sharp({ text: { text: 'text', wrap: 1 } }),
-      /Expected one of: word, char, wordChar, none for text\.wrap but received 1 of type number/
+      /Expected one of: word, char, word-char, none for text\.wrap but received 1 of type number/
     );
     assert.throws(
       () => sharp({ text: { text: 'text', wrap: false } }),
-      /Expected one of: word, char, wordChar, none for text\.wrap but received false of type boolean/
+      /Expected one of: word, char, word-char, none for text\.wrap but received false of type boolean/
     );
     assert.throws(
       () => sharp({ text: { text: 'text', wrap: 'invalid' } }),
-      /Expected one of: word, char, wordChar, none for text\.wrap but received invalid of type string/
+      /Expected one of: word, char, word-char, none for text\.wrap but received invalid of type string/
     );
   });
 });

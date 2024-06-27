@@ -9,16 +9,19 @@ const sharp = require('../../');
 
 describe('Utilities', function () {
   describe('Cache', function () {
-    it('Can be disabled', function () {
-      sharp.cache(false);
-      const cache = sharp.cache(false);
-      assert.strictEqual(cache.memory.current, 0);
-      assert.strictEqual(cache.memory.max, 0);
-      assert.strictEqual(typeof cache.memory.high, 'number');
-      assert.strictEqual(cache.files.current, 0);
-      assert.strictEqual(cache.files.max, 0);
-      assert.strictEqual(cache.items.current, 0);
-      assert.strictEqual(cache.items.max, 0);
+    it('Can be disabled', function (done) {
+      queueMicrotask(() => {
+        sharp.cache(false);
+        const cache = sharp.cache(false);
+        assert.strictEqual(cache.memory.current, 0);
+        assert.strictEqual(cache.memory.max, 0);
+        assert.strictEqual(typeof cache.memory.high, 'number');
+        assert.strictEqual(cache.files.current, 0);
+        assert.strictEqual(cache.files.max, 0);
+        assert.strictEqual(cache.items.current, 0);
+        assert.strictEqual(cache.items.max, 0);
+        done();
+      });
     });
     it('Can be enabled with defaults', function () {
       const cache = sharp.cache(true);
@@ -131,7 +134,7 @@ describe('Utilities', function () {
       });
     });
     it('input fileSuffix', function () {
-      assert.deepStrictEqual(['.jpg', '.jpeg', '.jpe'], sharp.format.jpeg.input.fileSuffix);
+      assert.deepStrictEqual(['.jpg', '.jpeg', '.jpe', '.jfif'], sharp.format.jpeg.input.fileSuffix);
     });
     it('output alias', function () {
       assert.deepStrictEqual(['jpe', 'jpg'], sharp.format.jpeg.output.alias);
@@ -143,14 +146,6 @@ describe('Utilities', function () {
       assert.strictEqual('object', typeof sharp.versions);
       assert(semver.valid(sharp.versions.vips));
       assert(semver.valid(sharp.versions.sharp));
-    });
-  });
-
-  describe('Vendor', function () {
-    it('Contains expected attributes', function () {
-      assert.strictEqual('object', typeof sharp.vendor);
-      assert.strictEqual('string', typeof sharp.vendor.current);
-      assert.strictEqual(true, Array.isArray(sharp.vendor.installed));
     });
   });
 

@@ -44,6 +44,12 @@ sharp('input.png')
     // sharpened, with metadata, 90% quality WebP image data. Phew!
   });
 
+sharp('input.png')
+  .keepMetadata()
+  .toFile('output.png', (err, info) => {
+    // output.png is an image containing input.png along with all metadata(EXIF, ICC, XMP, IPTC) from input.png
+  })
+
 sharp('input.jpg')
   .resize(300, 200)
   .toFile('output.jpg', (err: Error) => {
@@ -73,8 +79,6 @@ readableStream.pipe(transformer).pipe(writableStream);
 
 console.log(sharp.format);
 console.log(sharp.versions);
-console.log(sharp.vendor.current);
-console.log(sharp.vendor.installed.join(', '));
 
 sharp.queue.on('change', (queueLength: number) => {
   console.log(`Queue contains ${queueLength} task(s)`);
@@ -406,7 +410,7 @@ sharp({
 
 // Taken from API documentation at
 // https://sharp.pixelplumbing.com/api-operation#clahe
-// introducted
+// introduced
 sharp('input.jpg').clahe({ width: 10, height: 10 }).toFile('output.jpg');
 
 sharp('input.jpg').clahe({ width: 10, height: 10, maxSlope: 5 }).toFile('outfile.jpg');
@@ -574,8 +578,8 @@ const nohalo: string = sharp.interpolators.nohalo;
 const vertexSplitQuadraticBasisSpline: string = sharp.interpolators.vertexSplitQuadraticBasisSpline;
 
 // Triming
-sharp(input).trim('#000').toBuffer();
-sharp(input).trim(10).toBuffer();
+sharp(input).trim({ background: '#000' }).toBuffer();
+sharp(input).trim({ threshold: 10, lineArt: true }).toBuffer();
 sharp(input).trim({ background: '#bf1942', threshold: 30 }).toBuffer();
 
 // Text input
@@ -591,7 +595,7 @@ sharp({
     rgba: true,
     justify: true,
     spacing: 10,
-    wrap: 'charWord',
+    wrap: 'word-char',
   },
 })
   .png()
@@ -661,3 +665,39 @@ sharp('input.tiff').webp({ preset: 'drawing' }).toFile('out.webp');
 sharp('input.tiff').webp({ preset: 'text' }).toFile('out.webp');
 sharp('input.tiff').webp({ preset: 'default' }).toFile('out.webp');
 
+sharp(input)
+  .keepExif()
+  .withExif({
+    IFD0: {
+      k1: 'v1'
+    }
+  })
+  .withExifMerge({
+    IFD1: {
+      k2: 'v2'
+    }
+  })
+  .keepIccProfile()
+  .withIccProfile('filename')
+  .withIccProfile('filename', { attach: false });
+
+// Added missing types for OverlayOptions
+// https://github.com/lovell/sharp/pull/4048
+sharp(input).composite([
+  {
+    input: 'image.gif',
+    animated: true,
+    limitInputPixels: 536805378,
+    density: 144,
+    failOn: "warning"
+  }
+])
+sharp(input).composite([
+  {
+    input: 'image.png',
+    animated: false,
+    limitInputPixels: 178935126,
+    density: 72,
+    failOn: "truncated"
+  }
+])
