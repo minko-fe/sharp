@@ -84,27 +84,44 @@ jobs:
       - name: Dependencies (Rocky Linux glibc)
         if: contains(matrix.container, 'rockylinux')
         run: |
-          dnf install -y gcc-toolset-11-gcc-c++ make git python3.12 fontconfig google-noto-sans-fonts
+          dnf install -y gcc-toolset-11-gcc-c++ make git python3.10 fontconfig google-noto-sans-fonts
           echo "/opt/rh/gcc-toolset-11/root/usr/bin" >> $GITHUB_PATH
-      - name: Dependencies (Python 3.12 - macOS, Windows)
+          echo "PYTHON=$(which python3.10)" >> $GITHUB_ENV
+          echo "PATH=$PATH:/opt/rh/gcc-toolset-11/root/usr/bin" >> $GITHUB_ENV
+
+      - name: Dependencies (Linux musl)
+        if: contains(matrix.container, 'alpine')
+        run: |
+          apk add build-base git python3.10 font-noto --update-cache
+          ln -sf /usr/bin/python3.10 /usr/bin/python3
+          echo "PYTHON=/usr/bin/python3" >> $GITHUB_ENV
+
+      - name: Dependencies (Python - macOS, Windows)
+        if: contains(matrix.os, 'macos') || contains(matrix.os, 'windows')
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
       - name: Dependencies (Node.js)
         if: "!contains(matrix.platform, 'linuxmusl')"
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.nodejs_version }}
           architecture: ${{ matrix.nodejs_arch }}
+
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Fix working directory ownership
         if: matrix.container
         run: chown root.root .
+
       - name: Install
         run: npm install --build-from-source --unsafe-perm
+
       - name: Test
         run: npm test
+
       - name: Prebuild
         if: matrix.prebuild && startsWith(github.ref, 'refs/tags/')
         env:
