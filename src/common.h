@@ -14,6 +14,7 @@
 
 // Verify platform and compiler compatibility
 
+// 不需要此判断
 // #if (VIPS_MAJOR_VERSION < 8) || \
 //   (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION < 15) || \
 //   (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION == 15 && VIPS_MICRO_VERSION < 2)

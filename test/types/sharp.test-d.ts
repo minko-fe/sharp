@@ -59,6 +59,12 @@ sharp('input.jpg')
 
 sharp('input.jpg').resize({ width: 300 }).blur(false).blur(true).toFile('output.jpg');
 
+sharp().blur();
+sharp().blur(1);
+sharp().blur({ sigma: 1 });
+sharp().blur({ sigma: 1, precision: 'approximate' });
+sharp().blur({ sigma: 1, minAmplitude: 0.8 });
+
 sharp({
   create: {
     width: 300,
@@ -293,6 +299,13 @@ sharp('input.gif')
     [0.3588, 0.7044, 0.1368],
     [0.299, 0.587, 0.114],
     [0.2392, 0.4696, 0.0912],
+  ])
+
+  .recomb([
+    [1,0,0,0],
+    [0,1,0,0],
+    [0,0,1,0],
+    [0,0,0,1],
   ])
 
   .modulate({ brightness: 2 })
@@ -685,19 +698,19 @@ sharp(input)
 // https://github.com/lovell/sharp/pull/4048
 sharp(input).composite([
   {
-    input: 'image.gif',
-    animated: true,
-    limitInputPixels: 536805378,
-    density: 144,
+    input: 'image.gif', 
+    animated: true, 
+    limitInputPixels: 536805378, 
+    density: 144, 
     failOn: "warning"
   }
 ])
 sharp(input).composite([
   {
-    input: 'image.png',
+    input: 'image.png',  
     animated: false,
-    limitInputPixels: 178935126,
-    density: 72,
+    limitInputPixels: 178935126, 
+    density: 72, 
     failOn: "truncated"
   }
 ])
