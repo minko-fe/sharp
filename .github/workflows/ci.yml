@@ -93,7 +93,7 @@ jobs:
         if: contains(matrix.container, 'alpine')
         run: |
           apk add build-base git python3 font-noto --update-cache
-          ln -sf /usr/bin/python3 /usr/bin/python3
+          ln -sf python3 /usr/bin/python
           echo "PYTHON=/usr/bin/python3" >> $GITHUB_ENV
           echo "/usr/bin" >> $GITHUB_PATH
 
