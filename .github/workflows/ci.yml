@@ -95,12 +95,13 @@ jobs:
           apk add build-base git python3 font-noto --update-cache
           ln -sf /usr/bin/python3 /usr/bin/python3
           echo "PYTHON=/usr/bin/python3" >> $GITHUB_ENV
+          echo "/usr/bin" >> $GITHUB_PATH
 
       - name: Dependencies (Python - macOS, Windows)
         if: contains(matrix.os, 'macos') || contains(matrix.os, 'windows')
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.10'
 
       - name: Dependencies (Node.js)
         if: "!contains(matrix.platform, 'linuxmusl')"
