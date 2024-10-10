@@ -13,13 +13,7 @@
 #include <vips/vips8>
 
 // Verify platform and compiler compatibility
-
-// 不需要此判断
-// #if (VIPS_MAJOR_VERSION < 8) || \
-//   (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION < 15) || \
-//   (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION == 15 && VIPS_MICRO_VERSION < 2)
-// #error "libvips version 8.15.2+ is required - please see https://sharp.pixelplumbing.com/install"
-// #endif
+// 注意：！！！不需要判断版本的代码！！！
 
 #if ((!defined(__clang__)) && defined(__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6)))
 #error "GCC version 4.6+ is required for C++11 features - please see https://sharp.pixelplumbing.com/install"
