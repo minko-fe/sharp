@@ -81,8 +81,7 @@ jobs:
             nodejs_version_major: 20
             platform: win32-x64
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+   
       - name: Dependencies (Rocky Linux glibc)
         if: contains(matrix.container, 'rockylinux')
         run: |
@@ -99,6 +98,11 @@ jobs:
         with:
           node-version: ${{ matrix.nodejs_version }}
           architecture: ${{ matrix.nodejs_arch }}
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Fix working directory ownership
+        if: matrix.container
+        run: chown root.root .
       - name: Install
         run: npm install --build-from-source --unsafe-perm
       - name: Test
