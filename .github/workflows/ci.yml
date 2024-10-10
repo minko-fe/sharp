@@ -81,12 +81,14 @@ jobs:
             nodejs_version_major: 20
             platform: win32-x64
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Dependencies (Rocky Linux glibc)
         if: contains(matrix.container, 'rockylinux')
         run: |
           dnf install -y gcc-toolset-11-gcc-c++ make git python3.12 fontconfig google-noto-sans-fonts
           echo "/opt/rh/gcc-toolset-11/root/usr/bin" >> $GITHUB_PATH
-      - name: Dependencies (Python 3.11 - macOS, Windows)
+      - name: Dependencies (Python 3.12 - macOS, Windows)
         if: contains(matrix.os, 'macos') || contains(matrix.os, 'windows')
         uses: actions/setup-python@v5
         with:
@@ -97,10 +99,8 @@ jobs:
         with:
           node-version: ${{ matrix.nodejs_version }}
           architecture: ${{ matrix.nodejs_arch }}
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Install
-        run: npm install --build-from-source
+        run: npm install --build-from-source --unsafe-perm
       - name: Test
         run: npm test
       - name: Prebuild
