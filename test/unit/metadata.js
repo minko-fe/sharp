@@ -154,6 +154,31 @@ describe('Image metadata', function () {
     });
   });
 
+  it('PNG with comment', function (done) {
+    sharp(fixtures.inputPngTestJoinChannel).metadata(function (err, metadata) {
+      if (err) throw err;
+      assert.strictEqual('png', metadata.format);
+      assert.strictEqual('undefined', typeof metadata.size);
+      assert.strictEqual(320, metadata.width);
+      assert.strictEqual(240, metadata.height);
+      assert.strictEqual('b-w', metadata.space);
+      assert.strictEqual(1, metadata.channels);
+      assert.strictEqual('uchar', metadata.depth);
+      assert.strictEqual(72, metadata.density);
+      assert.strictEqual('undefined', typeof metadata.chromaSubsampling);
+      assert.strictEqual(false, metadata.isProgressive);
+      assert.strictEqual(false, metadata.hasProfile);
+      assert.strictEqual(false, metadata.hasAlpha);
+      assert.strictEqual('undefined', typeof metadata.orientation);
+      assert.strictEqual('undefined', typeof metadata.exif);
+      assert.strictEqual('undefined', typeof metadata.icc);
+      assert.strictEqual(1, metadata.comments.length);
+      assert.strictEqual('Comment', metadata.comments[0].keyword);
+      assert.strictEqual('Created with GIMP', metadata.comments[0].text);
+      done();
+    });
+  });
+
   it('Transparent PNG', function (done) {
     sharp(fixtures.inputPngWithTransparency).metadata(function (err, metadata) {
       if (err) throw err;
@@ -576,6 +601,17 @@ describe('Image metadata', function () {
     assert.strictEqual(description, 'Generic RGB Profile');
   });
 
+  it('keep existing ICC profile, avoid colour transform', async () => {
+    const [r, g, b] = await sharp(fixtures.inputPngWithProPhotoProfile)
+      .keepIccProfile()
+      .raw()
+      .toBuffer();
+
+    assert.strictEqual(r, 131);
+    assert.strictEqual(g, 141);
+    assert.strictEqual(b, 192);
+  });
+
   it('keep existing CMYK ICC profile', async () => {
     const data = await sharp(fixtures.inputJpgWithCmykProfile)
       .pipelineColourspace('cmyk')
@@ -616,13 +652,13 @@ describe('Image metadata', function () {
       .png()
       .withIccProfile(fixtures.path('invalid-illuminant.icc'));
 
-    let warningEmitted = '';
+    const warningsEmitted = [];
     img.on('warning', (warning) => {
-      warningEmitted = warning;
+      warningsEmitted.push(warning);
     });
 
     const data = await img.toBuffer();
-    assert.strictEqual('Invalid profile', warningEmitted);
+    assert.strict(warningsEmitted.includes('Invalid profile'));
 
     const metadata = await sharp(data).metadata();
     assert.strictEqual(3, metadata.channels);
