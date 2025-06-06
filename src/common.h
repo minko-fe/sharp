@@ -13,15 +13,16 @@
 #include <vips/vips8>
 
 // Verify platform and compiler compatibility
-// 注意：！！！不需要判断版本的代码！！！
 
-#if ((!defined(__clang__)) && defined(__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6)))
-#error "GCC version 4.6+ is required for C++11 features - please see https://sharp.pixelplumbing.com/install"
-#endif
+// #if (VIPS_MAJOR_VERSION < 8) || \
+//   (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION < 16) || \
+//   (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION == 16 && VIPS_MICRO_VERSION < 1)
+// #error "libvips version 8.16.1+ is required - please see https://sharp.pixelplumbing.com/install"
+// #endif
 
-#if (defined(__clang__) && defined(__has_feature))
-#if (!__has_feature(cxx_range_for))
-#error "clang version 3.0+ is required for C++11 features - please see https://sharp.pixelplumbing.com/install"
+#if defined(__has_include)
+#if !__has_include(<filesystem>)
+#error "C++17 compiler required - please see https://sharp.pixelplumbing.com/install"
 #endif
 #endif
 
@@ -32,6 +33,7 @@ namespace sharp {
   struct InputDescriptor {  // NOLINT(runtime/indentation_namespace)
     std::string name;
     std::string file;
+    bool autoOrient;
     char *buffer;
     VipsFailOn failOn;
     uint64_t limitInputPixels;
@@ -69,13 +71,21 @@ namespace sharp {
     int textSpacing;
     VipsTextWrap textWrap;
     int textAutofitDpi;
+    bool joinAnimated;
+    int joinAcross;
+    int joinShim;
+    std::vector<double> joinBackground;
+    VipsAlign joinHalign;
+    VipsAlign joinValign;
+    std::vector<double> pdfBackground;
 
     InputDescriptor():
+      autoOrient(false),
       buffer(nullptr),
       failOn(VIPS_FAIL_ON_WARNING),
       limitInputPixels(0x3FFF * 0x3FFF),
       unlimited(false),
-      access(VIPS_ACCESS_RANDOM),
+      access(VIPS_ACCESS_SEQUENTIAL),
       bufferLength(0),
       isBuffer(false),
       density(72.0),
@@ -103,7 +113,14 @@ namespace sharp {
       textRgba(false),
       textSpacing(0),
       textWrap(VIPS_TEXT_WRAP_WORD),
-      textAutofitDpi(0) {}
+      textAutofitDpi(0),
+      joinAnimated(false),
+      joinAcross(1),
+      joinShim(0),
+      joinBackground{ 0.0, 0.0, 0.0, 255.0 },
+      joinHalign(VIPS_ALIGN_LOW),
+      joinValign(VIPS_ALIGN_LOW),
+      pdfBackground{ 255.0, 255.0, 255.0, 255.0 } {}
   };
 
   // Convenience methods to access the attributes of a Napi::Object
@@ -142,6 +159,7 @@ namespace sharp {
     FITS,
     EXR,
     JXL,
+    RAD,
     VIPS,
     RAW,
     UNKNOWN,
@@ -226,12 +244,6 @@ namespace sharp {
     Set embedded profile.
   */
   VImage SetProfile(VImage image, std::pair<char*, size_t> icc);
-
-  /*
-    Does this image have an alpha channel?
-    Uses colour space interpretation with number of channels to guess this.
-  */
-  bool HasAlpha(VImage image);
 
   /*
     Remove all EXIF-related image fields.
@@ -346,12 +358,6 @@ namespace sharp {
   bool Is16Bit(VipsInterpretation const interpretation);
 
   /*
-    Return the image alpha maximum. Useful for combining alpha bands. scRGB
-    images are 0 - 1 for image data, but the alpha is 0 - 255.
-  */
-  double MaximumImageAlpha(VipsInterpretation const interpretation);
-
-  /*
     Convert RGBA value to another colourspace
   */
   std::vector<double> GetRgbaAsColourspace(std::vector<double> const rgba,
@@ -363,7 +369,7 @@ namespace sharp {
   std::tuple<VImage, std::vector<double>> ApplyAlpha(VImage image, std::vector<double> colour, bool premultiply);
 
   /*
-    Removes alpha channel, if any.
+    Removes alpha channels, if any.
   */
   VImage RemoveAlpha(VImage image);
 
