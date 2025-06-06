@@ -5,15 +5,14 @@
     'sharp_vendor_dir': './vendor/<(vips_version)/<(platform_and_arch)'
   },
   'targets': [{
-    'target_name': 'libvips',
+    'target_name': 'libvips-cpp',
     'conditions': [
       ['OS == "win"', {
         # Build libvips C++ binding for Windows due to MSVC std library ABI changes
         'type': 'shared_library',
         'defines': [
           'VIPS_CPLUSPLUS_EXPORTS',
-          '_ALLOW_KEYWORD_MACROS',
-           '<!(echo Entered OS == win logic ~1~ >&2)'
+          '_ALLOW_KEYWORD_MACROS'
         ],
         'sources': [
           'src/libvips/cplusplus/VConnection.cpp',
@@ -36,10 +35,10 @@
         'configurations': {
           'Release': {
             'msvs_settings': {
+              "AdditionalOptions": [
+                "/std:c++17"
+              ],
               'VCCLCompilerTool': {
-                "AdditionalOptions": [
-                  "/std:c++17"
-                ],
                 'ExceptionHandling': 1,
                 'Optimization': 1,
                 'WholeProgramOptimization': 'true'
@@ -78,7 +77,7 @@
     ],
     'dependencies': [
       '<!(node -p "require(\'node-addon-api\').gyp")',
-      'libvips'
+      'libvips-cpp'
     ],
     'variables': {
       'runtime_link%': 'shared',
@@ -132,8 +131,7 @@
           ['OS == "win"', {
             'defines': [
               '_ALLOW_KEYWORD_MACROS',
-              '_FILE_OFFSET_BITS=64',
-              '<!(echo Entered OS == win logic ~2~ >&2)'
+              '_FILE_OFFSET_BITS=64'
             ],
             'link_settings': {
               'library_dirs': ['<(sharp_vendor_dir)/lib'],
