@@ -138,9 +138,9 @@ jobs:
           echo "PYTHON=/usr/bin/python3" >> $GITHUB_ENV
           echo "/usr/bin" >> $GITHUB_PATH
 
-      - name: Dependencies (Python - macOS, Windows)
+      - name: Dependencies (Python 3.11 - macOS, Windows)
         if: contains(matrix.os, 'macos') || contains(matrix.os, 'windows')
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 

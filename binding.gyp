@@ -5,7 +5,7 @@
     'sharp_vendor_dir': './vendor/<(vips_version)/<(platform_and_arch)'
   },
   'targets': [{
-    'target_name': 'libvips-cpp',
+    'target_name': 'libvips-cpp-<(vips_version)',
     'conditions': [
       ['OS == "win"', {
         # Build libvips C++ binding for Windows due to MSVC std library ABI changes
@@ -36,6 +36,9 @@
           'Release': {
             'msvs_settings': {
               'VCCLCompilerTool': {
+                "AdditionalOptions": [
+                  "/std:c++17"
+                ],
                 'ExceptionHandling': 1,
                 'Optimization': 1,
                 'WholeProgramOptimization': 'true'
@@ -74,7 +77,7 @@
     ],
     'dependencies': [
       '<!(node -p "require(\'node-addon-api\').gyp")',
-      'libvips-cpp'
+      'libvips-cpp-<(vips_version)'
     ],
     'variables': {
       'runtime_link%': 'shared',
@@ -141,7 +144,7 @@
             'link_settings': {
               'library_dirs': ['../<(sharp_vendor_dir)/lib'],
               'libraries': [
-                'libvips-cpp.42.dylib'
+                'libvips-cpp.<(vips_version).dylib'
               ]
             },
             'xcode_settings': {
@@ -156,9 +159,9 @@
               '_GLIBCXX_USE_CXX11_ABI=1'
             ],
             'link_settings': {
-              'library_dirs': ['../<(sharp_vendor_dir)/lib'],
+              
               'libraries': [
-                '-l:libvips-cpp.so.42'
+                '-l:libvips-cpp.so.<(vips_version)'
               ],
               'ldflags': [
                 # Ensure runtime linking is relative to sharp.node
@@ -170,14 +173,14 @@
       }]
     ],
     'cflags_cc': [
-      '-std=c++0x',
+      '-std=c++17',
       '-fexceptions',
       '-Wall',
       '-Os'
     ],
     'xcode_settings': {
-      'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',
-      'MACOSX_DEPLOYMENT_TARGET': '10.13',
+      'CLANG_CXX_LANGUAGE_STANDARD': 'c++17',
+      'MACOSX_DEPLOYMENT_TARGET': '10.15',
       'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
       'GCC_ENABLE_CPP_RTTI': 'YES',
       'OTHER_CPLUSPLUSFLAGS': [
@@ -202,6 +205,9 @@
           ['OS == "win"', {
             'msvs_settings': {
               'VCCLCompilerTool': {
+                "AdditionalOptions": [
+                  "/std:c++17"
+                ],
                 'ExceptionHandling': 1,
                 'Optimization': 1,
                 'WholeProgramOptimization': 'true'
