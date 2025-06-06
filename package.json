@@ -77,7 +77,7 @@
   },
   "license": "Apache-2.0",
   "config": {
-    "libvips": "8.16.1",
+    "libvips": "8.16.0",
     "runtime": "napi",
     "target": 9
   },

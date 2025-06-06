@@ -234,5 +234,21 @@
         ]
       }
     },
+  }, {
+    'target_name': 'copy-dll',
+    'type': 'none',
+    'dependencies': [
+      'sharp-<(platform_and_arch)'
+    ],
+    'conditions': [
+      ['OS == "win"', {
+        'copies': [{
+          'destination': 'build/Release',
+          'files': [
+            '<(sharp_vendor_dir)/lib/libvips-42.dll'
+          ]
+        }]
+      }]
+    ]
   }]
 }
