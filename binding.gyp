@@ -78,7 +78,7 @@
     ],
     'dependencies': [
       '<!(node -p "require(\'node-addon-api\').gyp")',
-      'libvips-cpp-<(vips_version)'
+      'libvips-minko-test'
     ],
     'variables': {
       'runtime_link%': 'shared',
