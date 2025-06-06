@@ -9,8 +9,6 @@ const path = require('path');
 const stream = require('stream');
 const zlib = require('zlib');
 
-// const { createHash } = require('crypto');
-
 const detectLibc = require('detect-libc');
 const semverCoerce = require('semver/functions/coerce');
 const semverLessThan = require('semver/functions/lt');
@@ -64,37 +62,6 @@ const handleError = function (err) {
   }
 };
 
-// const verifyIntegrity = function (platformAndArch) {
-//   const expected = libvips.integrity(platformAndArch);
-//   if (installationForced || !expected) {
-//     libvips.log(`Integrity check skipped for ${platformAndArch}`);
-//     return new stream.PassThrough();
-//   }
-//   const hash = createHash('sha512');
-//   return new stream.Transform({
-//     transform: function (chunk, _encoding, done) {
-//       hash.update(chunk);
-//       done(null, chunk);
-//     },
-//     flush: function (done) {
-//       const digest = `sha512-${hash.digest('base64')}`;
-//       if (expected !== digest) {
-//         try {
-//           libvips.removeVendoredLibvips();
-//         } catch (err) {
-//           libvips.log(err.message);
-//         }
-//         libvips.log(`Integrity expected: ${expected}`);
-//         libvips.log(`Integrity received: ${digest}`);
-//         done(new Error(`Integrity check failed for ${platformAndArch}`));
-//       } else {
-//         libvips.log(`Integrity check passed for ${platformAndArch}`);
-//         done();
-//       }
-//     }
-//   });
-// };
-
 const extractTarball = function (tarPath, platformAndArch) {
   const versionedVendorPath = path.join(__dirname, '..', 'vendor', minimumLibvipsVersion, platformAndArch);
   libvips.mkdirSync(versionedVendorPath);
@@ -106,8 +73,6 @@ const extractTarball = function (tarPath, platformAndArch) {
 
   stream.pipeline(
     fs.createReadStream(tarPath),
-    // verifyIntegrity(platformAndArch),
-    // new zlib.BrotliDecompress(),
     zlib.createGunzip(),
     tarFs.extract(versionedVendorPath, { ignore }),
     function (err) {
@@ -201,7 +166,7 @@ try {
               // Clean up temporary file
               try {
                 fs.unlinkSync(tarPathTemp);
-              } catch (e) {}
+              } catch (e) { }
               fail(err);
             })
             .on('close', function () {
