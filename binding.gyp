@@ -17,7 +17,6 @@
         ],
         'dependencies': [
           '<!(node -p "require(\'node-addon-api\').gyp")',
-          'libvips-cpp-<(vips_version)'
         ],
         'sources': [
           'src/libvips/cplusplus/VConnection.cpp',
@@ -141,7 +140,6 @@
             ],
             'dependencies': [
               '<!(node -p "require(\'node-addon-api\').gyp")',
-              'libvips-cpp-<(vips_version)'
             ],
             'link_settings': {
               'library_dirs': ['<(sharp_vendor_dir)/lib'],
