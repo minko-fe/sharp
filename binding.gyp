@@ -5,7 +5,7 @@
     'sharp_vendor_dir': './vendor/<(vips_version)/<(platform_and_arch)'
   },
   'targets': [{
-    'target_name': 'libvips-cpp-<(vips_version)',
+    'target_name': 'libvips-cpp',
     'conditions': [
       ['OS == "win"', {
         # Build libvips C++ binding for Windows due to MSVC std library ABI changes
@@ -141,7 +141,7 @@
             'link_settings': {
               'library_dirs': ['../<(sharp_vendor_dir)/lib'],
               'libraries': [
-                'libvips-cpp.<(vips_version).dylib'
+                'libvips-cpp.42.dylib'
               ]
             },
             'xcode_settings': {
@@ -158,7 +158,7 @@
             'link_settings': {
               'library_dirs': ['../<(sharp_vendor_dir)/lib'],
               'libraries': [
-                '-l:libvips-cpp.so.<(vips_version)'
+                '-l:libvips-cpp.so.42'
               ],
               'ldflags': [
                 # Ensure runtime linking is relative to sharp.node
