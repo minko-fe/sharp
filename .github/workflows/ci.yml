@@ -144,10 +144,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install distutils
+      - name: Install setuptools in virtual environment
         run: |
-          python3 -m ensurepip
-          python3 -m pip install setuptools
+          python3 -m venv venv
+          . venv/bin/activate
+          pip install setuptools
 
       - name: Dependencies (Node.js)
         if: "!contains(matrix.platform, 'linuxmusl')"
@@ -172,5 +173,5 @@ jobs:
       - name: Prebuild
         if: matrix.prebuild && startsWith(github.ref, 'refs/tags/')
         env:
-          prebuild_upload: ${{ secrets.GITHUB_TOKEN }}
+          prebuild_upload: ${{ secrets.GHB_TOKEN }}
         run: npx prebuild --runtime napi --target 9
