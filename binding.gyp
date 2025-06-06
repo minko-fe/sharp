@@ -15,6 +15,10 @@
           '_ALLOW_KEYWORD_MACROS',
            '<!(echo Entered OS == win logic ~1~ >&2)'
         ],
+        'dependencies': [
+          '<!(node -p "require(\'node-addon-api\').gyp")',
+          'libvips-cpp-<(vips_version)'
+        ],
         'sources': [
           'src/libvips/cplusplus/VConnection.cpp',
           'src/libvips/cplusplus/VError.cpp',
@@ -134,6 +138,10 @@
               '_ALLOW_KEYWORD_MACROS',
               '_FILE_OFFSET_BITS=64',
               '<!(echo Entered OS == win logic ~2~ >&2)'
+            ],
+            'dependencies': [
+              '<!(node -p "require(\'node-addon-api\').gyp")',
+              'libvips-cpp-<(vips_version)'
             ],
             'link_settings': {
               'library_dirs': ['<(sharp_vendor_dir)/lib'],
