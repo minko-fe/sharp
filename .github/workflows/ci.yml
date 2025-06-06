@@ -125,7 +125,7 @@ jobs:
       - name: Dependencies (Rocky Linux glibc)
         if: contains(matrix.container, 'rockylinux')
         run: |
-          dnf install -y gcc-toolset-11-gcc-c++ make git python3 fontconfig google-noto-sans-fonts
+          dnf install -y gcc-toolset-11-gcc-c++ make git python3.12 fontconfig google-noto-sans-fonts
           echo "/opt/rh/gcc-toolset-11/root/usr/bin" >> $GITHUB_PATH
           echo "PYTHON=$(which python3)" >> $GITHUB_ENV
           echo "PATH=$PATH:/opt/rh/gcc-toolset-11/root/usr/bin" >> $GITHUB_ENV
@@ -138,11 +138,16 @@ jobs:
           echo "PYTHON=/usr/bin/python3" >> $GITHUB_ENV
           echo "/usr/bin" >> $GITHUB_PATH
 
-      - name: Dependencies (Python 3.11 - macOS, Windows)
+      - name: Dependencies (Python 3.12 - macOS, Windows)
         if: contains(matrix.os, 'macos') || contains(matrix.os, 'windows')
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
+
+      - name: Install distutils
+        run: |
+          python3 -m ensurepip
+          python3 -m pip install setuptools
 
       - name: Dependencies (Node.js)
         if: "!contains(matrix.platform, 'linuxmusl')"
@@ -168,4 +173,4 @@ jobs:
         if: matrix.prebuild && startsWith(github.ref, 'refs/tags/')
         env:
           prebuild_upload: ${{ secrets.GITHUB_TOKEN }}
-        run: npx prebuild --runtime napi --target 7
+        run: npx prebuild --runtime napi --target 9
