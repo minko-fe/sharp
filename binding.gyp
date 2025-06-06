@@ -5,7 +5,7 @@
     'sharp_vendor_dir': './vendor/<(vips_version)/<(platform_and_arch)'
   },
   'targets': [{
-    'target_name': 'libvips-minko-test',
+    'target_name': 'libvips',
     'conditions': [
       ['OS == "win"', {
         # Build libvips C++ binding for Windows due to MSVC std library ABI changes
@@ -78,7 +78,7 @@
     ],
     'dependencies': [
       '<!(node -p "require(\'node-addon-api\').gyp")',
-      'libvips-minko-test'
+      'libvips'
     ],
     'variables': {
       'runtime_link%': 'shared',

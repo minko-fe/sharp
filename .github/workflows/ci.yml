@@ -45,10 +45,6 @@ jobs:
             container: node:20-alpine3.18
             nodejs_version_major: 20
             platform: linuxmusl-x64
-          - os: ubuntu-24.04
-            container: node:22-alpine3.20
-            nodejs_version_major: 22
-            platform: linuxmusl-x64
           - os: macos-13
             nodejs_arch: x64
             nodejs_version: "^18.17.0"
