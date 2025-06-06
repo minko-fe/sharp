@@ -136,7 +136,7 @@ jobs:
       - name: Dependencies (Linux musl)
         if: contains(matrix.container, 'alpine')
         run: |
-          apk add build-base git python3.11.9 font-noto --update-cache
+          apk add build-base git python3 font-noto --update-cache
           ln -sf python3 /usr/bin/python
           echo "PYTHON=/usr/bin/python3" >> $GITHUB_ENV
           echo "/usr/bin" >> $GITHUB_PATH

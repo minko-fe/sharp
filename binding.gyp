@@ -5,7 +5,7 @@
     'sharp_vendor_dir': './vendor/<(vips_version)/<(platform_and_arch)'
   },
   'targets': [{
-    'target_name': 'libvips-cpp-<(vips_version)',
+    'target_name': 'libvips-minko-test',
     'conditions': [
       ['OS == "win"', {
         # Build libvips C++ binding for Windows due to MSVC std library ABI changes
@@ -14,9 +14,6 @@
           'VIPS_CPLUSPLUS_EXPORTS',
           '_ALLOW_KEYWORD_MACROS',
            '<!(echo Entered OS == win logic ~1~ >&2)'
-        ],
-        'dependencies': [
-          '<!(node -p "require(\'node-addon-api\').gyp")',
         ],
         'sources': [
           'src/libvips/cplusplus/VConnection.cpp',
@@ -137,9 +134,6 @@
               '_ALLOW_KEYWORD_MACROS',
               '_FILE_OFFSET_BITS=64',
               '<!(echo Entered OS == win logic ~2~ >&2)'
-            ],
-            'dependencies': [
-              '<!(node -p "require(\'node-addon-api\').gyp")',
             ],
             'link_settings': {
               'library_dirs': ['<(sharp_vendor_dir)/lib'],
