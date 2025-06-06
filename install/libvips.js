@@ -8,6 +8,8 @@ const os = require('os');
 const path = require('path');
 const stream = require('stream');
 const zlib = require('zlib');
+const util = require('util');
+const pipeline = util.promisify(stream.pipeline);
 
 const detectLibc = require('detect-libc');
 const semverCoerce = require('semver/functions/coerce');
@@ -62,7 +64,11 @@ const handleError = function (err) {
   }
 };
 
-const extractTarball = function (tarPath, platformAndArch) {
+let loading = false;
+const extractTarball = async function (tarPath, platformAndArch) {
+  if (loading) {
+    return;
+  }
   const versionedVendorPath = path.join(__dirname, '..', 'vendor', minimumLibvipsVersion, platformAndArch);
   libvips.mkdirSync(versionedVendorPath);
 
@@ -71,19 +77,21 @@ const extractTarball = function (tarPath, platformAndArch) {
     return ignoreVendorInclude && name.includes('include/');
   };
 
-  stream.pipeline(
-    fs.createReadStream(tarPath),
-    zlib.createGunzip(),
-    tarFs.extract(versionedVendorPath, { ignore }),
-    function (err) {
-      if (err) {
-        if (/unexpected end of file/.test(err.message)) {
-          fail(new Error(`Please delete ${tarPath} as it is not a valid tarball`));
-        }
-        fail(err);
-      }
+  try {
+    loading = true;
+    await pipeline(
+      fs.createReadStream(tarPath),
+      zlib.createGunzip(),
+      tarFs.extract(versionedVendorPath, { ignore })
+    );
+  } catch (err) {
+    if (/unexpected end of file/.test(err.message)) {
+      throw new Error(`Please delete ${tarPath} as it is not a valid tarball`);
     }
-  );
+    throw err;
+  } finally {
+    loading = false;
+  }
 };
 
 try {

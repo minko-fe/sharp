@@ -21,6 +21,8 @@ common.h 不需要判断版本的代码
 
 binding.gyp 谨慎修改
 
+不需要 libvipsVersion
+
 ## 开发
 
 - 切到sharp的对应tag，如 0.33.5，然后 git compare 0.34.2

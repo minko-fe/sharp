@@ -28,7 +28,6 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
   exports.Set("concurrency", Napi::Function::New(env, concurrency));
   exports.Set("counters", Napi::Function::New(env, counters));
   exports.Set("simd", Napi::Function::New(env, simd));
-  exports.Set("libvipsVersion", Napi::Function::New(env, libvipsVersion));
   exports.Set("format", Napi::Function::New(env, format));
   exports.Set("block", Napi::Function::New(env, block));
   exports.Set("_maxColourDistance", Napi::Function::New(env, _maxColourDistance));

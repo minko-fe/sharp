@@ -89,29 +89,6 @@ Napi::Value simd(const Napi::CallbackInfo& info) {
 }
 
 /*
-  Get libvips version
-*/
-Napi::Value libvipsVersion(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-  Napi::Object version = Napi::Object::New(env);
-
-  char semver[9];
-  std::snprintf(semver, sizeof(semver), "%d.%d.%d", vips_version(0), vips_version(1), vips_version(2));
-  version.Set("semver", Napi::String::New(env, semver));
-#ifdef SHARP_USE_GLOBAL_LIBVIPS
-  version.Set("isGlobal", Napi::Boolean::New(env, true));
-#else
-  version.Set("isGlobal", Napi::Boolean::New(env, false));
-#endif
-#ifdef __EMSCRIPTEN__
-  version.Set("isWasm", Napi::Boolean::New(env, true));
-#else
-  version.Set("isWasm", Napi::Boolean::New(env, false));
-#endif
-  return version;
-}
-
-/*
   Get available input/output file/buffer/stream formats
 */
 Napi::Value format(const Napi::CallbackInfo& info) {
