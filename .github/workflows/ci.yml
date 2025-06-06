@@ -166,5 +166,5 @@ jobs:
       - name: Prebuild
         if: matrix.prebuild && startsWith(github.ref, 'refs/tags/')
         env:
-          prebuild_upload: ${{ secrets.GHB_TOKEN }}
-        run: npx prebuild --runtime napi --target 9 --upload=$prebuild_upload
+          prebuild_upload: ${{ secrets.GITHUB_TOKEN }}
+        run: npx prebuild --runtime napi --target 9
