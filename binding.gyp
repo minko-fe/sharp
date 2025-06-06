@@ -31,8 +31,6 @@
           'library_dirs': ['<(sharp_vendor_dir)/lib'],
           'libraries': [
             'libvips.lib',
-            'libglib-2.0.lib',
-            'libgobject-2.0.lib'
           ],
         },
         'configurations': {
@@ -141,8 +139,6 @@
               'library_dirs': ['<(sharp_vendor_dir)/lib'],
               'libraries': [
                 'libvips.lib',
-                'libglib-2.0.lib',
-                'libgobject-2.0.lib'
               ]
             }
           }],
@@ -167,7 +163,7 @@
             'link_settings': {
               'library_dirs': ['../<(sharp_vendor_dir)/lib'],
               'libraries': [
-                'libvips-cpp.so.<(vips_version)'
+                '-l:libvips-cpp.so.<(vips_version)'
               ],
               'ldflags': [
                 # Ensure runtime linking is relative to sharp.node
