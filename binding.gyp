@@ -5,13 +5,13 @@
     'sharp_vendor_dir': './vendor/<(vips_version)/<(platform_and_arch)'
   },
   'targets': [{
-    'target_name': 'libvips-cpp',
+    'target_name': 'libvips-cpp-<(vips_version)',
     'conditions': [
       ['OS == "win"', {
         # Build libvips C++ binding for Windows due to MSVC std library ABI changes
         'type': 'shared_library',
         'defines': [
-          'VIPS_CPLUSPLUS_EXPORTS',
+          '_VIPS_PUBLIC=__declspec(dllexport)',
           '_ALLOW_KEYWORD_MACROS'
         ],
         'sources': [
@@ -77,7 +77,7 @@
     ],
     'dependencies': [
       '<!(node -p "require(\'node-addon-api\').gyp")',
-      'libvips-cpp'
+      'libvips-cpp-<(vips_version)'
     ],
     'variables': {
       'runtime_link%': 'shared',
