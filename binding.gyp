@@ -12,7 +12,8 @@
         'type': 'shared_library',
         'defines': [
           'VIPS_CPLUSPLUS_EXPORTS',
-          '_ALLOW_KEYWORD_MACROS'
+          '_ALLOW_KEYWORD_MACROS',
+           '<!(echo Entered OS == win logic ~1~ >&2)'
         ],
         'sources': [
           'src/libvips/cplusplus/VConnection.cpp',
@@ -30,6 +31,8 @@
           'library_dirs': ['<(sharp_vendor_dir)/lib'],
           'libraries': [
             'libvips.lib',
+            'libglib-2.0.lib',
+            'libgobject-2.0.lib'
           ],
         },
         'configurations': {
@@ -131,12 +134,15 @@
           ['OS == "win"', {
             'defines': [
               '_ALLOW_KEYWORD_MACROS',
-              '_FILE_OFFSET_BITS=64'
+              '_FILE_OFFSET_BITS=64',
+              '<!(echo Entered OS == win logic ~2~ >&2)'
             ],
             'link_settings': {
               'library_dirs': ['<(sharp_vendor_dir)/lib'],
               'libraries': [
                 'libvips.lib',
+                'libglib-2.0.lib',
+                'libgobject-2.0.lib'
               ]
             }
           }],
@@ -159,9 +165,9 @@
               '_GLIBCXX_USE_CXX11_ABI=1'
             ],
             'link_settings': {
-              
+              'library_dirs': ['../<(sharp_vendor_dir)/lib'],
               'libraries': [
-                '-l:libvips-cpp.so.<(vips_version)'
+                'libvips-cpp.so.<(vips_version)'
               ],
               'ldflags': [
                 # Ensure runtime linking is relative to sharp.node
