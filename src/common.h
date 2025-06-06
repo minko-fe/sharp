@@ -12,20 +12,6 @@
 #include <napi.h>
 #include <vips/vips8>
 
-// Verify platform and compiler compatibility
-
-// #if (VIPS_MAJOR_VERSION < 8) || \
-//   (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION < 16) || \
-//   (VIPS_MAJOR_VERSION == 8 && VIPS_MINOR_VERSION == 16 && VIPS_MICRO_VERSION < 1)
-// #error "libvips version 8.16.1+ is required - please see https://sharp.pixelplumbing.com/install"
-// #endif
-
-// #if defined(__has_include)
-// #if !__has_include(<filesystem>)
-// #error "C++17 compiler required - please see https://sharp.pixelplumbing.com/install"
-// #endif
-// #endif
-
 using vips::VImage;
 
 namespace sharp {

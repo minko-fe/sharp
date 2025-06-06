@@ -2,7 +2,9 @@
   'variables': {
     'vips_version': '<!(node -p "require(\'./lib/libvips\').minimumLibvipsVersion")',
     'platform_and_arch': '<!(node -p "require(\'./lib/platform\')()")',
-    'sharp_vendor_dir': './vendor/<(vips_version)/<(platform_and_arch)'
+    'sharp_vendor_dir': './vendor/<(vips_version)/<(platform_and_arch)',
+    'sharp_libvips_lib_dir': '<!(node -p "require(\'./lib/libvips\').buildSharpLibvipsLibDir()")'
+
   },
   'targets': [{
     'target_name': 'libvips-cpp-<(vips_version)',
@@ -71,7 +73,7 @@
   }, {
     'target_name': 'sharp-<(platform_and_arch)',
     'defines': [
-      'NAPI_VERSION=7',
+      'NAPI_VERSION=9',
       'NODE_ADDON_API_DISABLE_DEPRECATED',
       'NODE_API_SWALLOW_UNTHROWABLE_EXCEPTIONS'
     ],
@@ -234,5 +236,21 @@
         ]
       }
     },
+  }, {
+    'target_name': 'copy-dll',
+    'type': 'none',
+    'dependencies': [
+      'sharp-<(platform_and_arch)'
+    ],
+    'conditions': [
+      ['OS == "win"', {
+        'copies': [{
+          'destination': 'build/Release',
+          'files': [
+            '<(sharp_libvips_lib_dir)/libvips-42.dll'
+          ]
+        }]
+      }]
+    ]
   }]
 }
