@@ -16,7 +16,8 @@
     "docs-build": "node docs/build && node docs/search-index/build",
     "docs-serve": "cd docs && npx serve",
     "docs-publish": "cd docs && npx firebase-tools deploy --project pixelplumbing --only hosting:pixelplumbing-sharp",
-    "bump": "bumpp package.json --no-commit --tag --no-push --all"
+    "bump": "bumpp package.json --no-commit --tag --no-push --all",
+    "upload": "prebuild --runtime napi --target 9 --upload"
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -28,7 +29,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/hemengke1997/sharp"
+    "url": "git@github.com:minko-fe/sharp.git"
   },
   "keywords": [
     "jpeg",
@@ -77,7 +78,7 @@
   },
   "license": "Apache-2.0",
   "config": {
-    "libvips": "8.16.0",
+    "libvips": "8.16.1",
     "runtime": "napi",
     "target": 9
   },
