@@ -10,7 +10,7 @@ jobs:
   CI:
     permissions:
       contents: write # for npx prebuild to make release
-    name: ${{ matrix.container || matrix.os }} - Node.js ${{ matrix.nodejs_version }} ${{ matrix.nodejs_arch }} ${{ matrix.prebuild && '- prebuild' }}
+    name: ${{ matrix.platform }} - Node.js ${{ matrix.nodejs_version_major }} ${{ matrix.prebuild && '- prebuild' }}
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
     strategy:

@@ -247,7 +247,6 @@
           'destination': 'build/Release',
           'files': [
             '<(sharp_vendor_dir)/lib/libvips-42.dll',
-            '<(sharp_vendor_dir)/lib/libvips-cpp-<(vips_version).dll',
           ]
         }]
       }]
