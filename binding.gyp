@@ -12,7 +12,10 @@
         'type': 'shared_library',
         'defines': [
           '_VIPS_PUBLIC=__declspec(dllexport)',
-          '_ALLOW_KEYWORD_MACROS'
+          '_ALLOW_KEYWORD_MACROS',
+          'G_DISABLE_ASSERT',
+          'G_DISABLE_CAST_CHECKS',
+          'G_DISABLE_CHECKS'
         ],
         'sources': [
           'src/libvips/cplusplus/VConnection.cpp',
@@ -71,6 +74,9 @@
   }, {
     'target_name': 'sharp-<(platform_and_arch)',
     'defines': [
+      'G_DISABLE_ASSERT',
+      'G_DISABLE_CAST_CHECKS',
+      'G_DISABLE_CHECKS',
       'NAPI_VERSION=9',
       'NODE_ADDON_API_DISABLE_DEPRECATED',
       'NODE_API_SWALLOW_UNTHROWABLE_EXCEPTIONS'
@@ -80,7 +86,6 @@
       'libvips-cpp-<(vips_version)'
     ],
     'variables': {
-      'runtime_link%': 'shared',
       'conditions': [
         ['OS != "win"', {
           'pkg_config_path': '<!(node -p "require(\'./lib/libvips\').pkgConfigPath()")',
@@ -107,12 +112,8 @@
       ['use_global_libvips == "true"', {
         # Use pkg-config for include and lib
         'include_dirs': ['<!@(PKG_CONFIG_PATH="<(pkg_config_path)" pkg-config --cflags-only-I vips-cpp vips glib-2.0 | sed s\/-I//g)'],
+        'libraries': ['<!@(PKG_CONFIG_PATH="<(pkg_config_path)" pkg-config --libs vips-cpp)'],
         'conditions': [
-          ['runtime_link == "static"', {
-            'libraries': ['<!@(PKG_CONFIG_PATH="<(pkg_config_path)" pkg-config --libs --static vips-cpp)']
-          }, {
-            'libraries': ['<!@(PKG_CONFIG_PATH="<(pkg_config_path)" pkg-config --libs vips-cpp)']
-          }],
           ['OS == "linux"', {
             'defines': [
               # Inspect libvips-cpp.so to determine which C++11 ABI version was used and set _GLIBCXX_USE_CXX11_ABI accordingly. This is quite horrible.
@@ -245,7 +246,8 @@
         'copies': [{
           'destination': 'build/Release',
           'files': [
-            '<(sharp_vendor_dir)/lib/libvips-42.dll'
+            '<(sharp_vendor_dir)/lib/libvips-42.dll',
+            '<(sharp_vendor_dir)/lib/libvips-cpp-<(vips_version).dll',
           ]
         }]
       }]
